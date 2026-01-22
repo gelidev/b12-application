@@ -17,9 +17,8 @@ jobs:
 
       - name: Run submission script
         env:
-          B12_NAME: ${{ vars.B12_NAME }}
-          B12_EMAIL: ${{ vars.B12_EMAIL }}
-          B12_RESUME_LINK: ${{ vars.B12_RESUME_LINK }}
-          B12_REPOSITORY_LINK: ${{ vars.B12_REPOSITORY_LINK }}
-          B12_SIGNING_SECRET: ${{ vars.B12_SIGNING_SECRET }}
+          NAME: ${{ vars.NAME }}
+          EMAIL: ${{ vars.EMAIL }}
+          RESUME_LINK: ${{ vars.RESUME_LINK }}
+          SIGNING_SECRET: ${{ vars.SIGNING_SECRET }}
         run: python submit.py

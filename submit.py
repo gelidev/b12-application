@@ -27,13 +27,16 @@ def generate_signature(secret: str, body: bytes) -> str:
     digest = hmac.new(secret.encode("utf-8"), body, hashlib.sha256).hexdigest()
     return f"sha256={digest}"
 
-def get_config_from_env() -> Dict[str, str]:
-    # Extracts and validates environment variables
+def get_submission_context() -> Dict[str, str]:
+    # Retrieves identity info from Repository Variables and execution metadata from GitHub Environment Variables
+    server = os.environ.get("GITHUB_SERVER_URL")
+    repo = os.environ.get("GITHUB_REPOSITORY")
     run_id = os.environ.get("GITHUB_RUN_ID")
-    if not run_id:
-        raise RuntimeError("Missing GITHUB_RUN_ID; are you running in GitHub Actions?")
 
-    repo_link = os.environ["REPOSITORY_LINK"]
+    if not all([server, repo, run_id]):
+        raise RuntimeError("Missing GitHub Actions environment variables; are you running in GitHub Actions?")
+
+    repo_link = f"{server}/{repo}"
     
     return {
         "name": os.environ["NAME"],
@@ -78,21 +81,21 @@ def submit_application(url: str, payload: Dict[str, Any], secret: str) -> str:
 # --- Main Entry Point ---
 
 def main():
-    # 1. Configuration
-    config = get_config_from_env()
+    # 1. Gather all necessary data
+    ctx = get_submission_context()
 
     # 2. Build Payload
     payload = {
         "timestamp": iso_utc_now(),
-        "name": config["name"],
-        "email": config["email"],
-        "resume_link": config["resume_link"],
-        "repository_link": config["repository_link"],
-        "action_run_link": config["action_run_link"],
+        "name": ctx["name"],
+        "email": ctx["email"],
+        "resume_link": ctx["resume_link"],
+        "repository_link": ctx["repository_link"],
+        "action_run_link": ctx["action_run_link"],
     }
 
-    # 3. Execution
-    receipt = submit_application(SUBMISSION_URL, payload, config["signing_secret"])
+    # 3. Sign and transmit
+    receipt = submit_application(SUBMISSION_URL, payload, ctx["signing_secret"])
     print(receipt)
 
 if __name__ == "__main__":
