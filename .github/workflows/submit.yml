@@ -20,5 +20,5 @@ jobs:
           NAME: ${{ vars.NAME }}
           EMAIL: ${{ vars.EMAIL }}
           RESUME_LINK: ${{ vars.RESUME_LINK }}
-          SIGNING_SECRET: ${{ vars.SIGNING_SECRET }}
+          SIGNING_SECRET: ${{ secrets.SIGNING_SECRET }}
         run: python submit.py
