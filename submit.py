@@ -4,6 +4,7 @@ import hmac
 import hashlib
 import datetime
 import urllib.request
+from typing import Dict, Any
 
 SUBMISSION_URL = "https://b12.io/apply/submission"
 
